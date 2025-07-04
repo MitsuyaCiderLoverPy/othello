@@ -53,3 +53,55 @@
   top: 1.25vw;
   left: calc(50% - 12.5vw);
 }
+
+#pass{
+  position:fixed;
+  right:0px;
+  bottom:15vmin;
+  width:20vmin;
+  height:7.5vmin;
+  border-radius:1vmin;
+  font-size:5vmin;
+}
+
+#stoneCount {
+  position:fixed;
+  right:0px;
+  bottom:0px;
+  background-color: #ffffff;
+  width:20vmin;
+  height:15vmin;
+  font-size:5vmin;
+  text-align:left;
+}
+
+#finish{
+  width: 50vmin;
+  height: 35vmin;
+  border: 3px solid #000;
+  box-shadow: 0.5vmin 0.5vmin 0.5vmin #000000;
+  border-radius: 2vw;
+  font-size: 5vmin;
+  text-align: center;
+  position: fixed;
+  left: 35vw;
+  top: calc(50vh - 5vw);
+  display: none;
+  background-color: #ffffff;
+  z-index:100;
+}
+#finish::before{
+  width:100vw;
+  height:100vh;
+  opacity:50%;
+  z-index:50;
+  position:fixed;
+  background-color: #000;
+}
+
+.restart{
+  width:40vmin;
+  height: 8vmin;
+  font-size:5vmin;
+  border-radius:3vmin;
+}

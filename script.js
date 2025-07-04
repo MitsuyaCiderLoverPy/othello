@@ -4,6 +4,9 @@ let current_turn_opponent = 1;
 
 
 const initialize = () => {
+  cells_data = [[], [], [], [], [], [], [], []];
+  current_turn = 0;
+  current_turn_opponent = 1
   const main_div = document.getElementById("main");
   main_div.innerHTML = "";
   for (let i = 0; i <= 7; i++) {
@@ -18,6 +21,10 @@ const initialize = () => {
   setStone(3, 4, 0);
   setStone(3, 3, 1);
   setStone(4, 4, 1);
+
+  const stoneCountElement = document.getElementById("stoneCount")
+  stoneCountElement.innerHTML = `黒：${countStones()[0]}<br>白：${countStones()[1]}`
+
 };
 
 
@@ -30,6 +37,8 @@ const stoneClicked = (x, y) => {
   let tempList = [];
   let returned_value = [];
   let where_able_to_place = [[], [], [], [], [], [], [], []]
+  let if_able_to_place = false
+  let empty_cells = 0
 
   console.log(cells_data[x][y]);
 
@@ -48,27 +57,50 @@ const stoneClicked = (x, y) => {
     if (current_turn == 0) {
       current_turn = 1;
       current_turn_opponent = 0;
-      turnDisplay("白");
+      messageDisplay("白のターン");
     } else {
       current_turn = 0;
       current_turn_opponent = 1;
-      turnDisplay("黒");
+      messageDisplay("黒のターン");
     }
 
-
+    const stoneCountElement = document.getElementById("stoneCount")
+    stoneCountElement.innerHTML = `黒：${countStones()[0]}<br>白：${countStones()[1]}`
 
     console.log("turn end");
 
     console.log("start searching where the stone can be placed")
+
     for (let i = 0; i < cells_data.length; i++) {
       for (let j = 0; j < cells_data[i].length; j++) {
         if (cells_data[i][j] == "") {
           where_able_to_place[i][j] = searchMaster(i, j, current_turn)
           console.log(`where_able_to_place: ${where_able_to_place}`)
+          if_able_to_place = true
         } else {
           where_able_to_place[i][j] = false
+          empty_cells += 1
         }
       }
+    }
+    if (empty_cells == 0) {
+      if (countStones()[0] > countStones()[1]) {
+        finish_game(0)
+      } else if (countStones()[1] > countStones[0]) {
+        finish_game(1)
+      } else {
+        finish_game(2)
+      }
+    }
+    if(countStones()[0]==0){
+      finish_game(1)
+    }
+    if(countStones()[1]==0){
+      finish_game(0)
+    }
+    if (!if_able_to_place) {
+      messageDisplay("pass")
+      pass()
     }
   }
 };
@@ -177,10 +209,10 @@ const search = (initx, inity, xdir, ydir, changeList, ifStoneChange, current_tur
 };
 
 
-function turnDisplay(user) {
+function messageDisplay(message) {
   let target = document.getElementById("currentTurnText");
   let parentOfTarget = document.getElementById("currentTurn");
-  target.innerHTML = `${user}のターン`;
+  target.innerHTML = message;
   parentOfTarget.style.display = "block";
   setTimeout(() => {
     parentOfTarget.style.display = "none";
@@ -236,19 +268,49 @@ function searchMaster(x, y, current_turn_local) {
 }
 
 
-const countStones = () => {
-  let result = [0, 0]
+function countStones() {
+  let result_black = 0
+  let result_white = 0
   for (let i = 0; i < cells_data.length; i++) {
     for (let j = 0; j < cells_data[i].length; j++) {
       if (cells_data[i][j] == 0) {
-        result[0] += 1
+        result_black += 1
       } else if (cells_data[i][j] == 1) {
-        result[1] += 1
+        result_white += 1
       }
     }
   }
-  return result
+  console.log(`black:${result_black}, white:${result_white}`)
+  return [result_black, result_white]
 }
 
+function pass() {
+  if (current_turn == 0) {
+    current_turn = 1
+    current_turn_opponent = 0
+    messageDisplay("白のターン")
+  } else {
+    current_turn = 0
+    current_turn_opponent = 1
+    messageDisplay("黒のターン")
+  }
+}
+
+function finish_game(winner) {
+  console.log("it's time to finish the game.")
+  document.getElementById("finish").style.display = "block"
+  if (winner == 0) {
+    document.getElementById("winner").innerHTML = "黒"
+  } else if (winner == 1) {
+    document.getElementById("winner").innerHTML = "白"
+  } else {
+    document.getElementById("winner").innerHTML = "引き分け"
+  }
+}
+
+function restart() {
+  document.getElementById("finish").style.display = "none"
+  initialize()
+}
 
 addEventListener("DOMContentLoaded", initialize);
