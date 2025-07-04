@@ -2,6 +2,7 @@ let cells_data = [[], [], [], [], [], [], [], []];
 let current_turn = 0;
 let current_turn_opponent = 1;
 
+
 const initialize = () => {
   const main_div = document.getElementById("main");
   main_div.innerHTML = "";
@@ -19,6 +20,7 @@ const initialize = () => {
   setStone(4, 4, 1);
 };
 
+
 const stoneClicked = (x, y) => {
   console.log(x, y);
   let search_result = {};
@@ -27,7 +29,7 @@ const stoneClicked = (x, y) => {
   let changeList = [];
   let tempList = [];
   let returned_value = [];
-  let where_able_to_place=[[], [], [], [], [], [], [], []]
+  let where_able_to_place = [[], [], [], [], [], [], [], []]
 
   console.log(cells_data[x][y]);
 
@@ -52,21 +54,25 @@ const stoneClicked = (x, y) => {
       current_turn_opponent = 1;
       turnDisplay("黒");
     }
+
+
+
     console.log("turn end");
 
     console.log("start searching where the stone can be placed")
     for (let i = 0; i < cells_data.length; i++) {
       for (let j = 0; j < cells_data[i].length; j++) {
         if (cells_data[i][j] == "") {
-          where_able_to_place[i][j]=searchMaster(i, j, current_turn)
+          where_able_to_place[i][j] = searchMaster(i, j, current_turn)
           console.log(`where_able_to_place: ${where_able_to_place}`)
-        }else{
-          where_able_to_place[i][j]=false
+        } else {
+          where_able_to_place[i][j] = false
         }
       }
     }
   }
 };
+
 
 const setStone = (x, y, user) => {
   console.log(`setStone function: ${x}, ${y}, ${user}`);
@@ -80,8 +86,9 @@ const setStone = (x, y, user) => {
   }
 };
 
+
 const search = (initx, inity, xdir, ydir, changeList, ifStoneChange, current_turn_local) => {
-  let current_turn_opponent_local=0
+  let current_turn_opponent_local = 0
   if (current_turn_local == 0) {
     current_turn_opponent_local = 1
   } else {
@@ -169,6 +176,7 @@ const search = (initx, inity, xdir, ydir, changeList, ifStoneChange, current_tur
   return [changeList, ifStoneChange];
 };
 
+
 function turnDisplay(user) {
   let target = document.getElementById("currentTurnText");
   let parentOfTarget = document.getElementById("currentTurn");
@@ -178,6 +186,7 @@ function turnDisplay(user) {
     parentOfTarget.style.display = "none";
   }, 1000);
 }
+
 
 function searchMaster(x, y, current_turn_local) {
   let changeList = []
@@ -225,5 +234,21 @@ function searchMaster(x, y, current_turn_local) {
 
   return [changeList, ifStoneChange]
 }
+
+
+const countStones = () => {
+  let result = [0, 0]
+  for (let i = 0; i < cells_data.length; i++) {
+    for (let j = 0; j < cells_data[i].length; j++) {
+      if (cells_data[i][j] == 0) {
+        result[0] += 1
+      } else if (cells_data[i][j] == 1) {
+        result[1] += 1
+      }
+    }
+  }
+  return result
+}
+
 
 addEventListener("DOMContentLoaded", initialize);
