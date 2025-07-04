@@ -7,9 +7,8 @@ const initialize = () => {
   main_div.innerHTML = "";
   for (let i = 0; i <= 7; i++) {
     for (let j = 0; j <= 7; j++) {
-      main_div.innerHTML += `<div id="cell-${i}${j}" class="cell" style="left:${
-        i * 12.5
-      }vmin; top:${j * 12.5}vmin;" onclick="stoneClicked(${i}, ${j})"></div>`;
+      main_div.innerHTML += `<div id="cell-${i}${j}" class="cell" style="left:${i * 12.5
+        }vmin; top:${j * 12.5}vmin;" onclick="stoneClicked(${i}, ${j})"></div>`;
       cells_data[i][j] = null;
     }
   }
@@ -28,49 +27,13 @@ const stoneClicked = (x, y) => {
   let changeList = [];
   let tempList = [];
   let returned_value = [];
+  let where_able_to_place=[[], [], [], [], [], [], [], []]
 
-  console.log(`${x}, ${y}, ${current_location}, ${current_turn}`);
   console.log(cells_data[x][y]);
 
-  returned_value = search(x, y, 1, 0, changeList, ifStoneChange);
-  changeList = returned_value[0];
-  ifStoneChange = returned_value[1];
-  console.log(changeList);
-
-  returned_value = search(x, y, -1, 0, changeList, ifStoneChange);
-  changeList = returned_value[0];
-  ifStoneChange = returned_value[1];
-  console.log(changeList);
-
-  returned_value = search(x, y, 0, -1, changeList, ifStoneChange);
-  changeList = returned_value[0];
-  ifStoneChange = returned_value[1];
-  console.log(changeList);
-
-  returned_value = search(x, y, 0, 1, changeList, ifStoneChange);
-  changeList = returned_value[0];
-  ifStoneChange = returned_value[1];
-  console.log(changeList);
-
-  returned_value = search(x, y, 1, 1, changeList, ifStoneChange);
-  changeList = returned_value[0];
-  ifStoneChange = returned_value[1];
-  console.log(changeList);
-
-  returned_value = search(x, y, 1, -1, changeList, ifStoneChange);
-  changeList = returned_value[0];
-  ifStoneChange = returned_value[1];
-  console.log(changeList);
-
-  returned_value = search(x, y, -1, 1, changeList, ifStoneChange);
-  changeList = returned_value[0];
-  ifStoneChange = returned_value[1];
-  console.log(changeList);
-
-  returned_value = search(x, y, -1, -1, changeList, ifStoneChange);
-  changeList = returned_value[0];
-  ifStoneChange = returned_value[1];
-  console.log(changeList);
+  let onlyThisTimeArray = searchMaster(x, y, current_turn)
+  changeList = onlyThisTimeArray[0]
+  ifStoneChange = onlyThisTimeArray[1]
 
   if (ifStoneChange) {
     console.log(changeList);
@@ -90,6 +53,18 @@ const stoneClicked = (x, y) => {
       turnDisplay("黒");
     }
     console.log("turn end");
+
+    console.log("start searching where the stone can be placed")
+    for (let i = 0; i < cells_data.length; i++) {
+      for (let j = 0; j < cells_data[i].length; j++) {
+        if (cells_data[i][j] == "") {
+          where_able_to_place[i][j]=searchMaster(i, j, current_turn)
+          console.log(`where_able_to_place: ${where_able_to_place}`)
+        }else{
+          where_able_to_place[i][j]=false
+        }
+      }
+    }
   }
 };
 
@@ -105,7 +80,13 @@ const setStone = (x, y, user) => {
   }
 };
 
-const search = (initx, inity, xdir, ydir, changeList, ifStoneChange) => {
+const search = (initx, inity, xdir, ydir, changeList, ifStoneChange, current_turn_local) => {
+  let current_turn_opponent_local=0
+  if (current_turn_local == 0) {
+    current_turn_opponent_local = 1
+  } else {
+    current_turn_opponent_local = 0
+  }
   console.log("search_cicle", xdir, ydir);
   //xy: 0, -1, 1
   let tempList = [];
@@ -119,7 +100,7 @@ const search = (initx, inity, xdir, ydir, changeList, ifStoneChange) => {
     inity + ydir >= 0 &&
     inity + ydir <= 7
   ) {
-    if (cells_data[initx + xdir][inity + ydir] != current_turn_opponent) {
+    if (cells_data[initx + xdir][inity + ydir] != current_turn_opponent_local) {
       console.log("search function is finished before the loop");
       return [changeList, ifStoneChange];
     }
@@ -140,7 +121,7 @@ const search = (initx, inity, xdir, ydir, changeList, ifStoneChange) => {
     }
     if (
       cells_data[initx + how_moved * xdir][inity + how_moved * ydir] ==
-        current_turn &&
+      current_turn_local &&
       opponentExistence == 1
     ) {
       //search_result[`x${xdir}y${ydir}`] = [how_moved]
@@ -153,7 +134,7 @@ const search = (initx, inity, xdir, ydir, changeList, ifStoneChange) => {
     }
     if (
       cells_data[initx + how_moved * xdir][inity + how_moved * ydir] !=
-      current_turn_opponent
+      current_turn_opponent_local
     ) {
       opponentExistence = opponentExistence * 0;
       console.log(opponentExistence);
@@ -196,6 +177,53 @@ function turnDisplay(user) {
   setTimeout(() => {
     parentOfTarget.style.display = "none";
   }, 1000);
+}
+
+function searchMaster(x, y, current_turn_local) {
+  let changeList = []
+  let ifStoneChange = false
+
+  returned_value = search(x, y, 1, 0, changeList, ifStoneChange, current_turn_local);
+  changeList = returned_value[0];
+  ifStoneChange = returned_value[1];
+  console.log(changeList);
+
+  returned_value = search(x, y, -1, 0, changeList, ifStoneChange, current_turn_local);
+  changeList = returned_value[0];
+  ifStoneChange = returned_value[1];
+  console.log(changeList);
+
+  returned_value = search(x, y, 0, -1, changeList, ifStoneChange, current_turn_local);
+  changeList = returned_value[0];
+  ifStoneChange = returned_value[1];
+  console.log(changeList);
+
+  returned_value = search(x, y, 0, 1, changeList, ifStoneChange, current_turn_local);
+  changeList = returned_value[0];
+  ifStoneChange = returned_value[1];
+  console.log(changeList);
+
+  returned_value = search(x, y, 1, 1, changeList, ifStoneChange, current_turn_local);
+  changeList = returned_value[0];
+  ifStoneChange = returned_value[1];
+  console.log(changeList);
+
+  returned_value = search(x, y, 1, -1, changeList, ifStoneChange, current_turn_local);
+  changeList = returned_value[0];
+  ifStoneChange = returned_value[1];
+  console.log(changeList);
+
+  returned_value = search(x, y, -1, 1, changeList, ifStoneChange, current_turn_local);
+  changeList = returned_value[0];
+  ifStoneChange = returned_value[1];
+  console.log(changeList);
+
+  returned_value = search(x, y, -1, -1, changeList, ifStoneChange, current_turn_local);
+  changeList = returned_value[0];
+  ifStoneChange = returned_value[1];
+  console.log(changeList);
+
+  return [changeList, ifStoneChange]
 }
 
 addEventListener("DOMContentLoaded", initialize);
