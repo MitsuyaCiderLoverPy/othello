@@ -25,6 +25,8 @@ const initialize = () => {
   const stoneCountElement = document.getElementById("stoneCount")
   stoneCountElement.innerHTML = `黒：${countStones()[0]}<br>白：${countStones()[1]}`
 
+  document.getElementById("currentTurnFixedElement").innerHTML="黒"
+
 };
 
 
@@ -58,10 +60,12 @@ const stoneClicked = (x, y) => {
       current_turn = 1;
       current_turn_opponent = 0;
       messageDisplay("白のターン");
+      document.getElementById("currentTurnFixedElement").innerHTML="白"
     } else {
       current_turn = 0;
       current_turn_opponent = 1;
       messageDisplay("黒のターン");
+      document.getElementById("currentTurnFixedElement").innerHTML="黒"
     }
 
     const stoneCountElement = document.getElementById("stoneCount")

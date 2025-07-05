@@ -105,3 +105,11 @@
   font-size:5vmin;
   border-radius:3vmin;
 }
+
+#currentTurnFixedElement{
+  position:fixed;
+  background-color:#fff;
+  font-size: 3vw;
+  left:0px;
+  bottom:0px;
+}
