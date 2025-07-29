@@ -16,6 +16,7 @@ const initialize = () => {
       cells_data[i][j] = null;
     }
   }
+  
   console.log(cells_data);
   setStone(4, 3, 0);
   setStone(3, 4, 0);
